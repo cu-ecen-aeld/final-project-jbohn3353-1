@@ -10,12 +10,48 @@
 
 set -e
 
-default_keypath="ec2_key.priv"
-default_port="8022"
-default_instance_ip="34.224.219.227"
+keypath="ec2_key.priv"
+port="8022"
+instance_ip="34.224.219.227"
+instance_id="i-0ab8a29017bb737a7"
 
-keypath=${1:-${default_keypath}}
-port=${2:-${default_port}}
-instace_ip=${3:-${default_instance_ip}}
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -k)
+            shift
+            keypath=$1
+            shift
+            ;;
+        -p)
+            shift
+            port=$1
+            shift
+            ;;
+        -i)
+            shift
+            instace_ip=$1
+            shift
+            ;;
+        -s)
+            aws ec2 start-instances --instance-ids ${instance_id} 
+            while [ $(aws ec2 describe-instance-status --instance-ids ${instance_id} | grep -c running) -eq 0 ]; do
+                sleep 1
+            done
+            shift
+            ;;
+        -ss)
+            shift
+            instance_id=$1
+            aws ec2 start-instances --instance-ids ${instance_id} 
+            while [ $(aws ec2 describe-instance-status --instance-ids ${instance_id} | grep -c running) -eq 0 ]; do
+                sleep 1
+            done
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
-ssh -i ${keypath} -p ${port} root@${instace_ip}
+ssh -i ${keypath} -p ${port} root@${instance_ip}
