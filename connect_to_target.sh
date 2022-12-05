@@ -37,6 +37,7 @@ while [ $# -gt 0 ]; do
             while [ $(aws ec2 describe-instance-status --instance-ids ${instance_id} | grep -c running) -eq 0 ]; do
                 sleep 1
             done
+            sleep 30
             shift
             ;;
         -ss)
@@ -46,6 +47,7 @@ while [ $# -gt 0 ]; do
             while [ $(aws ec2 describe-instance-status --instance-ids ${instance_id} | grep -c running) -eq 0 ]; do
                 sleep 1
             done
+            sleep 30
             shift
             ;;
         *)
